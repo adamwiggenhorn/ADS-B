@@ -1,6 +1,6 @@
 # region Imports
 import csv
-import matplotlib.pyplot as plt
+import numpy as math
 # endregion
 
 # region Classes
@@ -17,6 +17,10 @@ class Aircraft:
         self.altitude = []
         self.speed = []
         self.indexes = []
+        self.milesNorth = []
+        self.milesEast = []
+        self.radius = []
+        self.angle = []
 
     def FindMyIndexes(self, idList):
         for index in range(0, len(idList)):
@@ -26,12 +30,28 @@ class Aircraft:
     def FillInfo(self, clockList, latitudeList, longitudeList, altitudeList, speedList):
 
         for index in self.indexes:
+
             # Add the clock, latitude, longitude, altitude, and speed data for this specific aircraft
             self.clock.append(clockList[index])
             self.latitude.append(latitudeList[index])
             self.longitude.append(longitudeList[index])
             self.altitude.append(altitudeList[index])
             self.speed.append(speedList[index])
+
+            # Get values for the milesNorth and milesEast variables. This distance is based in the raference
+            # constants pre-defined.
+            deltaY = float(latitudeList[index]) - REF_LATITUDE
+            deltaX = float(longitudeList[index]) - REF_LONGITUDE
+            self.milesNorth.append(deltaY * EARTH_CIRCUMFERENCE / 360)
+            self.milesEast.append(deltaX * EARTH_CIRCUMFERENCE / 360)
+
+            # Sets the radius variable of the plane at a given time which is how far the plane is from the reference
+            # point in miles.
+            self.radius.append(math.sqrt(self.milesNorth[len(self.milesNorth)-1] ** 2 + self.milesEast[len(self.milesEast)-1] ** 2))
+
+            # Sets the angle variable of the plane at a given time which is the angle between east and
+            # the plane with respect to the reference point.
+            self.angle.append(math.rad2deg(math.arctan2(self.milesNorth[len(self.milesNorth)-1], self.milesEast[len(self.milesEast)-1])))
 
 # endregion
 
@@ -57,7 +77,6 @@ def OpenCSVFile(path, delimiter="\t"):
     newFile.close()
 
     return retValue
-
 
 # ************************************************************************************************
 # Throw the lines of the csvFile that contain the required information into different lists and parses
@@ -85,14 +104,52 @@ def ParseRowData(csvFile):
 
             # Remove the '{' at the beginning of the latitude using the replace() function.
             latitude[len(latitude) - 1] = latitude[len(latitude) - 1].replace("{", "")
+
+# **************************************************************************************************
+# Creates the aircraft objects list for outside use. This is the primary function of this module.
+# **************************************************************************************************
+def CreateAircrafts():
+
+    # Opens the csv file specified in FILE_PATH
+    csvFile = OpenCSVFile(FILE_PATH)
+
+    # Parses the csvFile data into separate list for clock, latitude, longitude, altitude, and speed.
+    ParseRowData(csvFile)
+
+    # Initiate an aircraft object for each unique aircraft in the CSV file
+    for id in range(0, len(hexid)):
+
+        # If the current hexid (plane identification) is seen for the first time
+        # it is added the the unique uniqueID list. There will be an Aircraft class
+        # object created for each of the unique aircrafts then stored in the aircrafts list.
+        if not (uniqueID.__contains__(hexid[id])):
+            # adds the hexid of the current index into the uniqueID list
+            uniqueID.append(hexid[id])
+
+            # Creates and adds an object of the Aircraft class to the aircrafts list
+            # with a unique hexid.
+            aircrafts.append(Aircraft(hexid[id]))
+
+    # For each of the Aircraft objects created, the clock, latitude, longitude, altitude, and speed
+    # data of that specific aircraft are added to its object's respective lists.
+    for flyingThing in range(0, len(aircrafts)):
+        # Finds the indexes of the current aircraft object with respect to where its information
+        # is stored in the original csv data.
+        aircrafts[flyingThing].FindMyIndexes(hexid)
+
+        # Fills the data lists with the current aircraft's data found in the original csv data
+        aircrafts[flyingThing].FillInfo(clock, latitude, longitude, altitude, speed)
+
+    return aircrafts
+
 # endregion
 
-# ******************************************************************************
-# This code is for parsing a specified CSV file
-# ******************************************************************************
-
+# region Variable initializations
 # Constants
 FILE_PATH = 'C:/Users/adamw/Downloads/csvExample.csv'
+REF_LATITUDE = 40.08
+REF_LONGITUDE = -83.76
+EARTH_CIRCUMFERENCE = 24901.92
 
 # Initialize Variables
 speed = []
@@ -104,37 +161,4 @@ longitude = []
 uniqueID = []
 aircrafts = []
 
-# Opens the csv file specified in FILE_PATH
-csvFile = OpenCSVFile(FILE_PATH)
-
-# Parses the csvFile data into separate list for clock, latitude, longitude, altitude, and speed.
-ParseRowData(csvFile)
-
-
-# Initiate an aircraft object for each unique aircraft in the CSV file
-for id in range(0, len(hexid)):
-
-    # If the current hexid (plane identification) is seen for the first time
-    # it is added the the unique uniqueID list. There will be an Aircraft class
-    # object created for each of the unique aircrafts then stored in the aircrafts list.
-    if not (uniqueID.__contains__(hexid[id])):
-
-        # adds the hexid of the current index into the uniqueID list
-        uniqueID.append(hexid[id])
-
-        # Creates and adds an object of the Aircraft class to the aircrafts list
-        # with a unique hexid.
-        aircrafts.append(Aircraft(hexid[id]))
-
-# For each of the Aircraft objects created, the clock, latitude, longitude, altitude, and speed
-# data of that specific aircraft are added to its object's respective lists.
-for flyingThing in range(0, len(aircrafts)):
-
-    # Finds the indexes of the current aircraft object with respect to where its information
-    # is stored in the original csv data.
-    aircrafts[flyingThing].FindMyIndexes(hexid)
-
-    # Fills the data lists with the current aircraft's data found in the original csv data
-    aircrafts[flyingThing].FillInfo(clock, latitude, longitude, altitude, speed)
-
-print('h')
+# endregion
