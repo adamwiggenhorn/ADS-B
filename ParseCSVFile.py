@@ -51,7 +51,7 @@ class Aircraft:
 
             # Sets the angle variable of the plane at a given time which is the angle between east and
             # the plane with respect to the reference point.
-            self.angle.append(math.rad2deg(math.arctan2(self.milesNorth[len(self.milesNorth)-1], self.milesEast[len(self.milesEast)-1])))
+            self.angle.append(math.arctan2(self.milesNorth[len(self.milesNorth)-1], self.milesEast[len(self.milesEast)-1]))
 
 # endregion
 
@@ -142,9 +142,20 @@ def CreateAircrafts():
 
     return aircrafts
 
+# **************************************************************************************************
+# This function will print the CSV data to the console.
+# **************************************************************************************************
+def PrintCSVData():
+
+    csvData = OpenCSVFile(FILE_PATH)
+
+    for line in csvData:
+        print(line)
+
 # endregion
 
-# region Variable initializations
+# region Parameter initializations
+
 # Constants
 FILE_PATH = 'C:/Users/adamw/Downloads/csvExample.csv'
 REF_LATITUDE = 40.08
@@ -162,3 +173,5 @@ uniqueID = []
 aircrafts = []
 
 # endregion
+
+#PrintCSVData()
