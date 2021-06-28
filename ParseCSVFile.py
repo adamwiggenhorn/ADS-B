@@ -1,6 +1,7 @@
 # region Imports
 import csv
 import numpy as math
+import os
 # endregion
 
 # region Classes
@@ -82,28 +83,30 @@ def OpenCSVFile(path, delimiter="\t"):
 # Throw the lines of the csvFile that contain the required information into different lists and parses
 # that data in order to get lists for hexid, speed, latitude, longitude, altitude, and clock.
 # ************************************************************************************************
-def ParseRowData(csvFile):
+def ParseRowData(csvData):
 
-    # Loop that goes through every line of the csv data.
-    for line in csvFile:
+    # Loop that goes through every line of the all csv data.
+    for file in csvData:
 
-        # If the current line contains the hexid, speed, latitude, longitude, altitude, and clock
-        # data it will be parsed into separate lists for the given data.
-        if line.__contains__('hexid') and line.__contains__('speed') and line.__contains__(
-                'position') and line.__contains__('alt') and line.__contains__('clock'):
+        for line in file:
 
-            # Adding the parsed data into the designated lists. In addition the
-            # added information that is not wanted is removed out using the split()
-            # function.
-            hexid.append(line[line.index('hexid') + 1])
-            latitude.append(line[line.index('position') + 1].split(" ")[0])
-            longitude.append(line[line.index('position') + 1].split(" ")[1])
-            altitude.append(line[line.index('alt') + 1].split(" ")[0])
-            clock.append(line[line.index('clock') + 1].split(" ")[0])
-            speed.append(line[line.index('speed') + 1].split(" ")[0])
+            # If the current line contains the hexid, speed, latitude, longitude, altitude, and clock
+            # data it will be parsed into separate lists for the given data.
+            if line.__contains__('hexid') and line.__contains__('speed') and line.__contains__(
+                    'position') and line.__contains__('alt') and line.__contains__('clock'):
 
-            # Remove the '{' at the beginning of the latitude using the replace() function.
-            latitude[len(latitude) - 1] = latitude[len(latitude) - 1].replace("{", "")
+                # Adding the parsed data into the designated lists. In addition the
+                # added information that is not wanted is removed out using the split()
+                # function.
+                hexid.append(line[line.index('hexid') + 1])
+                latitude.append(line[line.index('position') + 1].split(" ")[0])
+                longitude.append(line[line.index('position') + 1].split(" ")[1])
+                altitude.append(line[line.index('alt') + 1].split(" ")[0])
+                clock.append(line[line.index('clock') + 1].split(" ")[0])
+                speed.append(line[line.index('speed') + 1].split(" ")[0])
+
+                # Remove the '{' at the beginning of the latitude using the replace() function.
+                latitude[len(latitude) - 1] = latitude[len(latitude) - 1].replace("{", "")
 
 # **************************************************************************************************
 # Creates the aircraft objects list for outside use. This is the primary function of this module.
@@ -111,10 +114,12 @@ def ParseRowData(csvFile):
 def CreateAircrafts():
 
     # Opens the csv file specified in FILE_PATH
-    csvFile = OpenCSVFile(FILE_PATH)
+    for fileName in os.listdir(directory):
+        if fileName.endswith(".csv"):
+            planeData.append(OpenCSVFile(str(directory + fileName)))
 
     # Parses the csvFile data into separate list for clock, latitude, longitude, altitude, and speed.
-    ParseRowData(csvFile)
+    ParseRowData(planeData)
 
     # Initiate an aircraft object for each unique aircraft in the CSV file
     for id in range(0, len(hexid)):
@@ -146,18 +151,24 @@ def CreateAircrafts():
 # This function will print the CSV data to the console.
 # **************************************************************************************************
 def PrintCSVData():
+    counter = 0
+    # Opens the csv file specified in FILE_PATH
+    for fileName in os.listdir(directory):
+        if fileName.endswith(".csv"):
+            planeData.append(OpenCSVFile(str(directory + fileName)))
 
-    csvData = OpenCSVFile(FILE_PATH)
-
-    for line in csvData:
-        print(line)
+    for file in planeData:
+        for line in file:
+            counter = counter + 1
+            print(line)
+    print('There are {0} rows'.format(str(counter)))
 
 # endregion
 
 # region Parameter initializations
 
 # Constants
-FILE_PATH = 'C:/Users/adamw/Downloads/csvExample.csv'
+directory = 'C:/Users/adamw/Downloads/csvData/'
 REF_LATITUDE = 40.08
 REF_LONGITUDE = -83.76
 EARTH_CIRCUMFERENCE = 24901.92
@@ -171,7 +182,12 @@ latitude = []
 longitude = []
 uniqueID = []
 aircrafts = []
+planeData = []
 
 # endregion
+
+#CreateAircrafts()
+PrintCSVData()
+
 
 #PrintCSVData()
