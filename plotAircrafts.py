@@ -1,7 +1,7 @@
 # region imports
 import matplotlib.pyplot as plt
 import math
-from ParseCSVFile import CreateAircrafts, Aircraft
+from parseData import CreateAircrafts, Aircraft
 from time import sleep
 # endregion
 
@@ -22,7 +22,7 @@ def PlotPlaneLocation(polarCoordinates, rmax = 150):
     ax = plt.subplot(projection='polar')
     ax.set_rlim(0, rmax)
     ax.set_thetagrids([0, 45, 90, 135, 180, 225, 270, 315], ['E', 'NE', 'N', 'NW', 'W', 'SW', 'S', 'SE'])
-    ax.set_title('All plane locations with respect to acquisition point (mi)')
+    ax.set_title('All plane locations with respect to acquisition point in miles (max distance: {0})'.format(rmax))
 
     # Adding the angle and radius values from the polarCoordinates list to two separate lists.
     # This is done for plotting purposes.
@@ -226,7 +226,7 @@ OLD_PLANE_BUFFER = 10
 AXIS_BUFFER_PERCENT = 1.1
 SHOW_HEXID = True
 NUMBER_PLANES = False
-PLOT_3D = True
+PLOT_3D = False
 
 
 

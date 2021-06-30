@@ -59,10 +59,10 @@ class Aircraft:
 # region Functions
 
 # ******************************************************************************
-# Opens the csv file and copies the information over to another variable that can
+# Opens the .txt file and copies the information over to another variable that can
 # be read after the file is closed
 # ******************************************************************************
-def OpenCSVFile(path, delimiter="\t"):
+def OpenDataFile(path, delimiter="\t"):
     # Initialize the variables
     retValue = []
 
@@ -73,6 +73,7 @@ def OpenCSVFile(path, delimiter="\t"):
     # Convert file into a list of the files rows
     for row in delimitedFile:
         retValue.append(row)
+        print('once')
 
     # Close the file
     newFile.close()
@@ -115,8 +116,8 @@ def CreateAircrafts():
 
     # Opens the csv file specified in FILE_PATH
     for fileName in os.listdir(directory):
-        if fileName.endswith(".csv"):
-            planeData.append(OpenCSVFile(str(directory + fileName)))
+        if fileName.endswith(".csv") or fileName.endswith(".txt"):
+            planeData.append(OpenDataFile(str(directory + fileName)))
 
     # Parses the csvFile data into separate list for clock, latitude, longitude, altitude, and speed.
     ParseRowData(planeData)
@@ -150,12 +151,12 @@ def CreateAircrafts():
 # **************************************************************************************************
 # This function will print the CSV data to the console.
 # **************************************************************************************************
-def PrintCSVData():
+def PrintData():
     counter = 0
     # Opens the csv file specified in FILE_PATH
     for fileName in os.listdir(directory):
-        if fileName.endswith(".csv"):
-            planeData.append(OpenCSVFile(str(directory + fileName)))
+        if fileName.endswith(".csv") or fileName.endswith(".txt"):
+            planeData.append(OpenDataFile(str(directory + fileName)))
 
     for file in planeData:
         for line in file:
@@ -187,7 +188,7 @@ planeData = []
 # endregion
 
 #CreateAircrafts()
-PrintCSVData()
+PrintData()
 
 
 #PrintCSVData()
