@@ -68,12 +68,14 @@ def OpenDataFile(path, delimiter="\t"):
 
     # Open and format the specified csv file
     newFile = open(path)
-    delimitedFile = csv.reader(newFile, delimiter=delimiter)
+    delimitedFile = csv.reader((x.replace('\0', '') for x in newFile), delimiter=delimiter)
+    print(path)
+
 
     # Convert file into a list of the files rows
     for row in delimitedFile:
-        retValue.append(row)
-        print('once')
+            retValue.append(row)
+
 
     # Close the file
     newFile.close()
@@ -170,8 +172,8 @@ def PrintData():
 
 # Constants
 directory = 'C:/Users/adamw/Downloads/csvData/'
-REF_LATITUDE = 40.08
-REF_LONGITUDE = -83.76
+REF_LATITUDE = 39.7932142
+REF_LONGITUDE = -84.0930016
 EARTH_CIRCUMFERENCE = 24901.92
 
 # Initialize Variables
@@ -188,7 +190,7 @@ planeData = []
 # endregion
 
 #CreateAircrafts()
-PrintData()
+#PrintData()
 
 
 #PrintCSVData()
