@@ -22,7 +22,7 @@ def PlotPlaneLocation(polarCoordinates, rmax = 150):
     ax = plt.subplot(projection='polar')
     ax.set_rlim(0, rmax)
     ax.set_thetagrids([0, 45, 90, 135, 180, 225, 270, 315], ['E', 'NE', 'N', 'NW', 'W', 'SW', 'S', 'SE'])
-    ax.set_title('All plane locations with respect to acquisition point in miles (max distance: {0})'.format(rmax))
+    ax.set_title('All plane locations with respect to acquisition point in miles (max distance: {0})'.format(rmax/AXIS_BUFFER_PERCENT))
 
     # Adding the angle and radius values from the polarCoordinates list to two separate lists.
     # This is done for plotting purposes.
@@ -222,7 +222,7 @@ def SimulateAllPlanes(aircrafts):
 REFRESH_TIME = 0.1
 SIMULATION_TIME = 30
 REMOVE_LOST_PLANES = True
-OLD_PLANE_BUFFER = 10
+OLD_PLANE_BUFFER = 4
 AXIS_BUFFER_PERCENT = 1.1
 SHOW_HEXID = False
 NUMBER_PLANES = False

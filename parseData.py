@@ -43,12 +43,27 @@ class Aircraft:
             # constants pre-defined.
             deltaY = float(latitudeList[index]) - REF_LATITUDE
             deltaX = float(longitudeList[index]) - REF_LONGITUDE
-            self.milesNorth.append(deltaY * EARTH_CIRCUMFERENCE / 360)
-            self.milesEast.append(deltaX * EARTH_CIRCUMFERENCE / 360)
+            self.radius.append(2*EARTH_RADIUS*math.arctan(math.sqrt(math.sin(math.radians(deltaY)/2)**(2) + math.cos(math.radians(float(REF_LATITUDE)))*math.cos(math.radians(float(latitudeList[index])))*(math.sin(math.radians(deltaX)/2)**(2)))))
+
+            if deltaY < 0:
+                self.milesNorth.append(-2 * EARTH_RADIUS * math.arctan(math.sqrt(
+                    math.sin(math.radians(deltaY) / 2) ** (2) + math.cos(math.radians(float(REF_LATITUDE))) * math.cos(
+                        math.radians(float(latitudeList[index]))) * (math.sin(0) ** (2)))))
+            else:
+                self.milesNorth.append(2 * EARTH_RADIUS * math.arctan(math.sqrt(
+                    math.sin(math.radians(deltaY) / 2) ** (2) + math.cos(math.radians(float(REF_LATITUDE))) * math.cos(
+                        math.radians(float(latitudeList[index]))) * (math.sin(0) ** (2)))))
+
+            if deltaX < 0:
+                self.milesEast.append(-2 * EARTH_RADIUS * math.arctan(
+                    math.sqrt(math.sin(0) ** (2) + (math.sin(math.radians(deltaX) / 2) ** (2)))))
+            else:
+                self.milesEast.append(2 * EARTH_RADIUS * math.arctan(
+                    math.sqrt(math.sin(0) ** (2) + (math.sin(math.radians(deltaX) / 2) ** (2)))))
 
             # Sets the radius variable of the plane at a given time which is how far the plane is from the reference
             # point in miles.
-            self.radius.append(math.sqrt(self.milesNorth[len(self.milesNorth)-1] ** 2 + self.milesEast[len(self.milesEast)-1] ** 2))
+            #self.radius.append(math.sqrt(self.milesNorth[len(self.milesNorth)-1] ** 2 + self.milesEast[len(self.milesEast)-1] ** 2))
 
             # Sets the angle variable of the plane at a given time which is the angle between east and
             # the plane with respect to the reference point.
@@ -147,7 +162,7 @@ def CreateAircrafts():
 
         # Fills the data lists with the current aircraft's data found in the original csv data
         aircrafts[flyingThing].FillInfo(clock, latitude, longitude, altitude, speed)
-
+    print(len(aircrafts))
     return aircrafts
 
 # **************************************************************************************************
@@ -171,10 +186,11 @@ def PrintData():
 # region Parameter initializations
 
 # Constants
-directory = 'C:/Users/adamw/Downloads/csvData/'
-REF_LATITUDE = 39.7932142
-REF_LONGITUDE = -84.0930016
+directory = 'C://ADS-B Project//DataForScript//'
+REF_LATITUDE = 38.892711
+REF_LONGITUDE = -86.849098
 EARTH_CIRCUMFERENCE = 24901.92
+EARTH_RADIUS = 3958.8
 
 # Initialize Variables
 speed = []
