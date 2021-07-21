@@ -7,6 +7,65 @@ from time import sleep
 
 # region Functions
 
+
+def PlotStatVsTime(aircrafts):
+    # Variables
+    clockList = []
+    currentPlanesRadius = []
+    currentPlaneID = []
+    currentPlanesCount = 0
+    radiusCords = []
+    planeCountCords = []
+    # If the aircrafts variable is a list ths code will run, if it is a single item the code below will.
+    if isinstance(aircrafts, list):
+        # Creates a list of the clock and radius values of every plane at every data point.
+        for plane in aircrafts:
+            for planeIndex in range(0,len(plane.clock)):
+                clockList.append(float(plane.clock[planeIndex]))
+
+        # Variables
+        startClock = min(clockList)
+        endClock = max(clockList)
+
+        # Setting the timeStep which is the variable which determines how many clock values
+        # are covered in each simulation refresh.
+        timeStep = (endClock - startClock) / POINTS_TO_PLOT
+
+        # This loop goes through once for every simulation refresh.
+        for counter in range(POINTS_TO_PLOT):
+
+            # This loop will go through every plan in the aircrafts list.
+            for plane in aircrafts:
+
+                # This loop will run once for every value held in the current planes clock list.
+                # It will have an increasing index every time it runs.
+                for index in range(0, len(plane.clock)):
+
+                    # If the current plane information is an update from the previous information
+                    # but not too far into the future (within a specified time range).
+                    if (float(plane.clock[index]) <= startClock + timeStep * (counter + 1)) \
+                            and (float(plane.clock[index]) >= startClock + timeStep * (counter)):
+
+                        if not currentPlaneID.__contains__(plane.ID):
+
+                            currentPlanesCount = currentPlanesCount + 1
+                            currentPlaneID.append(plane.ID)
+
+                        currentPlanesRadius.append(float(plane.radius[index]))
+
+            radiusCords.append(max(currentPlanesRadius))
+            planeCountCords.append(currentPlanesCount)
+            currentPlanesCount = 0
+            currentPlanesRadius.clear()
+            currentPlaneID.clear()
+
+        plt.plot(range(POINTS_TO_PLOT), radiusCords)
+        plt.plot(range(POINTS_TO_PLOT), planeCountCords)
+        print('Radius Points: ' + str(radiusCords))
+        print('Plane Count Points: ' + str(planeCountCords))
+        plt.show()
+
+
 # **********************************************************************************************************
 # This function will plot the polar coordinates passed in. This can be either a single set of coordinates,
 # or an array or coordinates.
@@ -20,7 +79,7 @@ def PlotPlaneLocation(polarCoordinates, rmax = 150):
     plt.cla()
     plt.ion()
     ax = plt.subplot(projection='polar')
-    ax.set_rlim(0, rmax)
+    ax.set_rlim(0, rmax*AXIS_BUFFER_PERCENT)
     ax.set_thetagrids([0, 45, 90, 135, 180, 225, 270, 315], ['E', 'NE', 'N', 'NW', 'W', 'SW', 'S', 'SE'])
     ax.set_title('All plane locations with respect to acquisition point in miles (max distance: {0})'.format(rmax/AXIS_BUFFER_PERCENT))
 
@@ -50,8 +109,8 @@ def PlotPlaneLocation3D(polarCoordinates, lMax = 150):
     plt.ion()
     plt.cla()
     ax = plt.subplot(projection='3d')
-    ax.set_ylim(-lMax, lMax)
-    ax.set_xlim(-lMax, lMax)
+    ax.set_ylim(-lMax*AXIS_BUFFER_PERCENT, lMax*AXIS_BUFFER_PERCENT)
+    ax.set_xlim(-lMax*AXIS_BUFFER_PERCENT, lMax*AXIS_BUFFER_PERCENT)
     ax.set_title('All plane locations with respect to acquisition point')
 
 
@@ -118,7 +177,7 @@ def SimulateAllPlanes(aircrafts):
         timeStep = (endClock - startClock) / (SIMULATION_TIME/ REFRESH_TIME)
 
         # This loop goes through once for every simulation refresh.
-        for counter in range(0, int(SIMULATION_TIME/REFRESH_TIME)):
+        for counter in range(int(SIMULATION_TIME/REFRESH_TIME)):
 
             # This will remove the planes that have not been updated recently from the lists
             # that are used to plot the planes.
@@ -158,10 +217,10 @@ def SimulateAllPlanes(aircrafts):
 
             if PLOT_3D:
                 # Plot all the planes that have information in the coordinatesToPLot list on a 3D plot.
-                PlotPlaneLocation3D(coordinatesToPlot, maxRadius * AXIS_BUFFER_PERCENT)
+                PlotPlaneLocation3D(coordinatesToPlot, maxRadius)
             else:
                 # Plot all the planes that have information in the coordinatesToPLot list.
-                PlotPlaneLocation(coordinatesToPlot, maxRadius * AXIS_BUFFER_PERCENT)
+                PlotPlaneLocation(coordinatesToPlot, maxRadius)
 
             # This pauses the program so that the plot doesnt update constantly.
             sleep(REFRESH_TIME)
@@ -222,6 +281,7 @@ def SimulateAllPlanes(aircrafts):
 REFRESH_TIME = 0.1
 SIMULATION_TIME = 30
 REMOVE_LOST_PLANES = True
+POINTS_TO_PLOT = 10
 OLD_PLANE_BUFFER = 4
 AXIS_BUFFER_PERCENT = 1.1
 SHOW_HEXID = False
@@ -229,6 +289,7 @@ NUMBER_PLANES = False
 PLOT_3D = False
 
 
+currentlySeenData = []
 
 # endregion
 
@@ -236,5 +297,6 @@ PLOT_3D = False
 planes = CreateAircrafts()
 
 # Run a selected simulation.
-SimulateAllPlanes(planes)
+#SimulateAllPlanes(planes)
 #SimulatePlane(planes[26])
+PlotStatVsTime(planes)
