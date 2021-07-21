@@ -2,6 +2,8 @@
 import csv
 import numpy as math
 import os
+
+
 # endregion
 
 # region Classes
@@ -43,7 +45,9 @@ class Aircraft:
             # constants pre-defined.
             deltaY = float(latitudeList[index]) - REF_LATITUDE
             deltaX = float(longitudeList[index]) - REF_LONGITUDE
-            self.radius.append(2*EARTH_RADIUS*math.arctan(math.sqrt(math.sin(math.radians(deltaY)/2)**(2) + math.cos(math.radians(float(REF_LATITUDE)))*math.cos(math.radians(float(latitudeList[index])))*(math.sin(math.radians(deltaX)/2)**(2)))))
+            self.radius.append(2 * EARTH_RADIUS * math.arctan(math.sqrt(
+                math.sin(math.radians(deltaY) / 2) ** (2) + math.cos(math.radians(float(REF_LATITUDE))) * math.cos(
+                    math.radians(float(latitudeList[index]))) * (math.sin(math.radians(deltaX) / 2) ** (2)))))
 
             if deltaY < 0:
                 self.milesNorth.append(-2 * EARTH_RADIUS * math.arctan(math.sqrt(
@@ -63,11 +67,13 @@ class Aircraft:
 
             # Sets the radius variable of the plane at a given time which is how far the plane is from the reference
             # point in miles.
-            #self.radius.append(math.sqrt(self.milesNorth[len(self.milesNorth)-1] ** 2 + self.milesEast[len(self.milesEast)-1] ** 2))
+            # self.radius.append(math.sqrt(self.milesNorth[len(self.milesNorth)-1] ** 2 + self.milesEast[len(self.milesEast)-1] ** 2))
 
             # Sets the angle variable of the plane at a given time which is the angle between east and
             # the plane with respect to the reference point.
-            self.angle.append(math.arctan2(self.milesNorth[len(self.milesNorth)-1], self.milesEast[len(self.milesEast)-1]))
+            self.angle.append(
+                math.arctan2(self.milesNorth[len(self.milesNorth) - 1], self.milesEast[len(self.milesEast) - 1]))
+
 
 # endregion
 
@@ -86,23 +92,21 @@ def OpenDataFile(path, delimiter="\t"):
     delimitedFile = csv.reader((x.replace('\0', '') for x in newFile), delimiter=delimiter)
     print(path)
 
-
     # Convert file into a list of the files rows
     for row in delimitedFile:
-            retValue.append(row)
-
+        retValue.append(row)
 
     # Close the file
     newFile.close()
 
     return retValue
 
+
 # ************************************************************************************************
 # Throw the lines of the csvFile that contain the required information into different lists and parses
 # that data in order to get lists for hexid, speed, latitude, longitude, altitude, and clock.
 # ************************************************************************************************
 def ParseRowData(csvData):
-
     # Loop that goes through every line of the all csv data.
     for file in csvData:
 
@@ -112,7 +116,6 @@ def ParseRowData(csvData):
             # data it will be parsed into separate lists for the given data.
             if line.__contains__('hexid') and line.__contains__('speed') and line.__contains__(
                     'position') and line.__contains__('alt') and line.__contains__('clock'):
-
                 # Adding the parsed data into the designated lists. In addition the
                 # added information that is not wanted is removed out using the split()
                 # function.
@@ -126,11 +129,11 @@ def ParseRowData(csvData):
                 # Remove the '{' at the beginning of the latitude using the replace() function.
                 latitude[len(latitude) - 1] = latitude[len(latitude) - 1].replace("{", "")
 
+
 # **************************************************************************************************
 # Creates the aircraft objects list for outside use. This is the primary function of this module.
 # **************************************************************************************************
 def CreateAircrafts():
-
     # Opens the csv file specified in FILE_PATH
     for fileName in os.listdir(directory):
         if fileName.endswith(".csv") or fileName.endswith(".txt"):
@@ -165,6 +168,7 @@ def CreateAircrafts():
     print(len(aircrafts))
     return aircrafts
 
+
 # **************************************************************************************************
 # This function will print the CSV data to the console.
 # **************************************************************************************************
@@ -181,12 +185,13 @@ def PrintData():
             print(line)
     print('There are {0} rows'.format(str(counter)))
 
+
 # endregion
 
 # region Parameter initializations
 
 # Constants
-directory = 'C://ADS-B Project//DataForScript//'
+directory = '/Users/jasondong/Desktop/Base-Station-Data/'
 REF_LATITUDE = 38.892711
 REF_LONGITUDE = -86.849098
 EARTH_CIRCUMFERENCE = 24901.92
@@ -205,8 +210,8 @@ planeData = []
 
 # endregion
 
-#CreateAircrafts()
-#PrintData()
+# CreateAircrafts()
+# PrintData()
 
 
-#PrintCSVData()
+# PrintCSVData()

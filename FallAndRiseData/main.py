@@ -4,6 +4,9 @@ import math
 
 rowData = []
 maxRange = 0
+REF_LATITUDE = 38.892711
+REF_LONGITUDE = -86.849098
+
 
 def OpenDataFile(path, delimiter="\t"):
     # Initialize the variables
@@ -26,9 +29,8 @@ def OpenDataFile(path, delimiter="\t"):
     return retValue
 
 aircraftDict = {710: [], 810: [], 910: [], 1010: [], 1110: [], 1210: [], 1310: [], 1410: [], 1510: [], 1610: []}
-maxRange = 0
 
-DIRECTORY = "C://ADS-B Project//aircraftDataForScript//"
+DIRECTORY = "/Users/jasondong/Desktop/Payload/"
 
 
 for fileName in os.listdir(DIRECTORY):
@@ -42,14 +44,19 @@ def calculateRange(refLat, refLong, lat, long):
     return range
 
 for row in rowData:
-    calculateRange(row[6], row[7])
+    newRange = calculateRange(REF_LATITUDE, REF_LONGITUDE, float(row[6]), float(row[7]))
+    if newRange > maxRange:
+        maxRange = newRange
     for key in aircraftDict:
         if float(row[3]) <= key:
             if row[4] not in aircraftDict[key]:
                 aircraftDict[key].append(row[4])
             break
 
-print(aircraftDict)
+for key in aircraftDict:
+    print(str(key) + ": " + str(len(aircraftDict[key])))
+    #print(aircraftDict[key])
+print(maxRange)
 
 
 
